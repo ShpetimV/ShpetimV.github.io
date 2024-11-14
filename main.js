@@ -2,12 +2,14 @@ let state = {
     board: Array(6).fill('').map(() => Array(7).fill(''))
 };
 
+let currentPlayer = 'r';
+
 function showBoard() {
     const boardEl = document.querySelector('.board');
     boardEl.innerHTML = '';
 
-    state.board.forEach(row => {
-        row.forEach(cell => {
+    state.board.forEach((row,rowIndex) => {
+        row.forEach((cell,cellIndex) => {
             const field = document.createElement("div");
             field.classList.add("field");
 
@@ -21,29 +23,36 @@ function showBoard() {
                 field.appendChild(piece);
             }
 
+            field.addEventListener("click", () => {
+                updateField(rowIndex,cellIndex);
+            })
+
             boardEl.appendChild(field);
         })
     })
 }
 
-function updateRandomField() {
-    const row = Math.floor(Math.random() * 6);
-    const col = Math.floor(Math.random() * 7);
-    const random = Math.random();
+function updateField(row,col) {
 
-    if (random < 0.33) {
-        state.board[row][col] = '';
-    } else if (random < 0.66) {
-        state.board[row][col] = 'r';
-    } else {
-        state.board[row][col] = 'b';
+    console.log(state.board.length);
+    for(let i = state.board.length - 1; i >= 0; i--) {
+        if(state.board[i][col] === '') {
+            state.board[i][col] = currentPlayer;
+            currentPlayer = currentPlayer === 'r' ? 'b' : 'r';
+            document.querySelector('.turnMessage').textContent = `It's ${currentPlayer === 'r' ? 'Red' : 'Blue'}'s turn!`;
+            showBoard();
+            break;
+        }
     }
 
-    showBoard();
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    showBoard(); // Initial rendering of the board
-    setInterval(updateRandomField, 1000); // Update a random field every second
-    console.log(state.board);
-});
+function clearBoard() {
+    state.board = Array(6).fill('').map(() => Array(7).fill(''));
+    showBoard();
+    document.querySelector('.turnMessage').textContent = "It's Red's turn!";
+}
+
+document.querySelector('.newGame').addEventListener("click", clearBoard);
+
+clearBoard();
