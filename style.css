@@ -1,0 +1,45 @@
+
+.title {
+    text-align: center;
+    margin: 20px 0;
+}
+
+div {
+    box-sizing: border-box;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(6, 1fr); /* Adjusted for a standard 6-row Connect Four grid */
+    width: 50vw;
+    max-width: 100%; /* Ensures the board does not overflow */
+    margin: auto;
+    outline: 1px solid black;
+}
+
+.board .field {
+    border: 1px solid black;
+    width: 100%; /* Full width of the grid cell */
+    height: 0;
+    padding-bottom: 100%; /* Maintains a square aspect ratio */
+    position: relative;
+}
+
+.board .field .piece {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+    border-radius: 50%;
+}
+
+.board .field .blue {
+    background-color: blue;
+}
+
+.board .field .red {
+    background-color: red;
+}
