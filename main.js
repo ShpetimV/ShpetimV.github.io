@@ -17,9 +17,9 @@ function showBoard() {
                 const piece = document.createElement("div");
                 piece.classList.add("piece", "red");
                 field.appendChild(piece);
-            } else if (cell === 'b') {
+            } else if (cell === 'y') {
                 const piece = document.createElement("div");
-                piece.classList.add("piece", "blue");
+                piece.classList.add("piece", "yellow");
                 field.appendChild(piece);
             }
 
@@ -38,8 +38,8 @@ function updateField(row,col) {
     for(let i = state.board.length - 1; i >= 0; i--) {
         if(state.board[i][col] === '') {
             state.board[i][col] = currentPlayer;
-            currentPlayer = currentPlayer === 'r' ? 'b' : 'r';
-            document.querySelector('.turnMessage').textContent = `It's ${currentPlayer === 'r' ? 'Red' : 'Blue'}'s turn!`;
+            currentPlayer = currentPlayer === 'r' ? 'y' : 'r';
+            document.querySelector('.turnMessage').textContent = `It's ${currentPlayer === 'r' ? 'Red' : 'Yellow'}'s turn!`;
             showBoard();
             break;
         }
