@@ -24,9 +24,10 @@ div {
     max-width: 100%; /* Ensures the board does not overflow */
     margin: auto;
     outline: 1px solid black;
-    background-color: blue;
+    background: #153db8;
     padding: 10px;
-    gap: 7px;
+    gap: 12px;
+    border-radius: 5px;
 }
 
 .board .field {
@@ -37,6 +38,11 @@ div {
     position: relative;
     border-radius: 50%;
     background-color: white;
+}
+
+.board .field:hover {
+    background-color: #e0e0e0; /* Light gray background to indicate hover */
+    cursor: pointer; /* Change cursor to pointer */
 }
 
 .board .field .piece {
@@ -50,9 +56,9 @@ div {
 }
 
 .board .field .yellow {
-    background-color: yellow;
+    background: radial-gradient(circle, #ffff66, #ffcc00);
 }
 
 .board .field .red {
-    background-color: red;
+    background: radial-gradient(circle, #ff4d4d, #cc0000);
 }
