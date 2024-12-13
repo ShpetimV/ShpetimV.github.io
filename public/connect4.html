@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Connect Four</title>
+</head>
+<body>
+<div class="heading">
+    <h1>Connect Four</h1>
+    <button class="newGame">New Game!</button>
+    <button onclick="loadState()" class="newGame">Laden</button>
+    <button onclick="saveState()" class="newGame">Speichern</button>
+</div>
+<div class="gameContainer">
+    <div class="playerTurnBox">
+        <div class="turnMessage">It's Red's turn!</div>
+        <div class="turnPiece">
+            <div class="piece red"></div>
+        </div>
+        <div class="thinking">Thinking<span class="dot1">.</span><span class="dot2">.</span><span class="dot3">.</span></div>
+    </div>
+    <div class="board"></div>
+    <script src="main.js"></script>
+</div>
+</body>
+</html>
