@@ -3,7 +3,7 @@ const ROWS = 6;
 const COLS = 7;
 const RED = 'r';
 const YELLOW = 'y';
-const SERVICE = "http://localhost:3000/api/data/c4state?api-key=c4game"
+const SERVICE = "http://localhost:3000/api/data/?api-key=c4game";
 
 // State (Model)
 const state = {
@@ -142,7 +142,13 @@ function clearBoard() {
 }
 
 function loadState() {
-    fetch(SERVICE)
+    if(!localStorage.getItem('savedGameId')) {
+        alert('No saved game found!');
+        return;
+    }
+
+    const savedId = localStorage.getItem('savedGameId');
+    fetch(`http://localhost:3000/api/data/${savedId}?api-key=c4game`)
         .then(response => response.json())
         .then(data => {
             state.board = data.gameState.board;
@@ -154,11 +160,15 @@ function loadState() {
 function saveState() {
     fetch(SERVICE, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ gameState: state })
-    });
+    })
+        .then(response => response.json())
+        .then(data => {
+            // data will have an {id: <generated-id>} property
+            // Store this id so you can update it later using PUT
+            localStorage.setItem('savedGameId', data.id);
+        });
 }
 
 // Start the Game
