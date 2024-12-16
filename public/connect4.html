@@ -9,11 +9,13 @@
 <body>
 <div class="heading">
     <h1>Connect Four</h1>
+</div>
+<div class="button-container">
     <button class="newGame">New Game!</button>
-    <button onclick="model.loadState()" class="newGame">Laden</button>
-    <button onclick="model.saveState()" class="newGame">Speichern</button>
-    <button onclick="model.loadStateLocal()" class="newGame">Laden Lokal</button>
-    <button onclick="model.saveStateLocal()" class="newGame">Speichern Lokal</button>
+    <button onclick="model.loadState()" class="uiButtons">Laden</button>
+    <button onclick="model.saveState()" class="uiButtons">Speichern</button>
+    <button onclick="model.loadStateLocal()" class="uiButtons">Laden Lokal</button>
+    <button onclick="model.saveStateLocal()" class="uiButtons">Speichern Lokal</button>
 </div>
 <div class="gameContainer">
     <div class="playerTurnBox">

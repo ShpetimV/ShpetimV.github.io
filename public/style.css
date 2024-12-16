@@ -77,7 +77,6 @@ html {
 
 .newGame {
     display: block;
-    margin: 20px auto;
     padding: 15px 30px;
     font-size: 1.2em;
     font-weight: bold;
@@ -102,6 +101,32 @@ html {
     transform: translateY(1px);
 }
 
+.uiButtons {
+    display: block;
+    padding: 15px 30px;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #ffffff;
+    background: #007bff;
+    border: none;
+    border-radius: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.uiButtons:hover {
+    background: #0056b3;
+    transform: translateY(-2px);
+    cursor: pointer;
+}
+
+.uiButtons:active {
+    background: #003f7f;
+    transform: translateY(1px);
+}
+
 .gameContainer {
     display: grid;
     justify-content: center;
@@ -109,6 +134,9 @@ html {
     align-items: flex-start;
     gap: 20px;
     padding: 20px;
+    background-color: #242424;
+    border-radius: 20px;
+    margin: 20px;
 }
 
 .board {
@@ -182,20 +210,34 @@ html {
     background: radial-gradient(circle, #ffeb3b, #fbc02d);
 }
 
-.heading {
-    display: flex;
-    align-items: center; /* Vertically align the items */
-    justify-content: space-between; /* Space out the title and button */
-    padding: 0 20px; /* Add some padding for spacing */
-    margin-bottom: 20px; /* Add spacing below the heading */
-    width: 100%; /* Ensure it spans the full width */
-    box-sizing: border-box; /* Include padding in the width */
+/* Heading Section */
+.heading h1 {
+    margin: 20px 0;
+    font-size: 2.5rem;
+    text-align: center;
 }
 
-.heading h1 {
-    margin: 0;
-    font-size: 2em; /* Adjust title font size */
-    color: #ffffff;
+/* Button Container */
+.button-container {
+    display: flex;
+    justify-content: center; /* Center buttons horizontally */
+    gap: 15px; /* Space between buttons */
+    margin: 10px 0 20px;
+}
+
+.button-container button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button-container button:hover {
+    background-color: #0056b3;
 }
 
 .thinking {
