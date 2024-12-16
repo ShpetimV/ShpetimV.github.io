@@ -1,5 +1,5 @@
 
-import { render, parseSjdon, createElement } from "/lib/suiweb.min.js";
+import { render, parseSjdon, createElement } from "./lib/suiweb.min.js";
 
 // Constants
 const ROWS = 6;
