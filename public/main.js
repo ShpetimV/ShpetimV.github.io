@@ -1,14 +1,17 @@
+
+import { render, parseSjdon, createElement } from "/lib/suiweb.min.js";
+
 // Constants
 const ROWS = 6;
 const COLS = 7;
 const RED = 'r';
 const YELLOW = 'y';
-const SERVICE = "http://localhost:3000/api/data/?api-key=c4game";
 const API_KEY = "c4game";
 const DATA_KEY = "gameState";
 
 // Model
 const model = {
+    stateSeq: [],
     state: {
         board: Array(ROWS).fill('').map(() => Array(COLS).fill('')),
         currentPlayer: RED,
@@ -16,15 +19,25 @@ const model = {
     init() {
         this.clearBoard(); // Initialize the board
     },
+    undo() {
+        if(this.stateSeq.length > 0) {
+            this.state = this.stateSeq.pop();
+        }
+    },
+    setState() {
+        this.stateSeq.push(JSON.parse(JSON.stringify(this.state)));
+    },
     clearBoard() {
         this.state.board = Array(ROWS).fill('').map(() => Array(COLS).fill(''));
         this.state.currentPlayer = RED;
     },
     togglePlayer() {
-        this.state.currentPlayer = this.state.currentPlayer === RED ? YELLOW : RED;
+        this.state = setInObject(this.state, 'currentPlayer', this.state.currentPlayer === RED ? YELLOW : RED);
     },
     updateCell(row, col) {
-        this.state.board[row][col] = this.state.currentPlayer;
+        const newRow = setInList(this.state.board[row], col, this.state.currentPlayer);
+        const newBoard = setInList(this.state.board, row, newRow);
+        this.state = setInObject(this.state, 'board', newBoard);
     },
     loadState() {
         fetch(`/api/data/${DATA_KEY}?api-key=${API_KEY}`, { method: 'GET' })
@@ -122,7 +135,31 @@ const model = {
         }
         return false;
     },
+
+
 };
+
+const App = () => [Board, { board: model.state.board }];
+
+const Board = ({ board }) => {
+    let fields = [];
+    for (let row = 0; row < ROWS; row++) {
+        for (let col = 0; col < COLS; col++) {
+            fields.push([Field, { type: board[row][col], id: `field-${row}-${col}`, row, col }]);
+        }
+    }
+    return ["div", { class: "board" }, ...fields];
+}
+
+const Field = ({ type, id, row, col }) => {
+    const field = ["div", { class: "field", "id": id, onClick: () => view.handleFieldClick(row, col) }];
+    if (type === RED) {
+        field.push(["div", { class: "piece red" }]);
+    } else if (type === YELLOW) {
+        field.push(["div", { class: "piece yellow" }]);
+    }
+    return field;
+}
 
 // View (UI)
 const view = {
@@ -137,35 +174,26 @@ const view = {
             this.renderBoard();
             this.updateTurnMessage();
         });
+        document.querySelector(".load").addEventListener("click", () => model.loadState());
+        document.querySelector(".save").addEventListener("click", () => model.saveState());
+        document.querySelector(".loadLocal").addEventListener("click", () => model.loadStateLocal());
+        document.querySelector(".saveLocal").addEventListener("click", () => model.saveStateLocal());
+        document.querySelector(".undo").addEventListener("click", () => {
+            model.undo();
+            this.renderBoard();
+            this.updateTurnMessage();
+        });
         this.renderBoard();
     },
     renderBoard() {
-        this.boardEl.innerHTML = ''; // Clear all fields from the existing board element
-
-        // Generate fields for the board
-        model.state.board.forEach((row, rowIndex) => {
-            row.forEach((cell, colIndex) => {
-                const fieldSJDON = ["div", {
-                    className: "field",
-                    dataset: { row: rowIndex, col: colIndex },
-                    onclick: () => this.handleFieldClick(rowIndex, colIndex)
-                }];
-
-                // Add a piece if the cell is occupied
-                if (cell === RED) {
-                    fieldSJDON.push(["div", { className: "piece red" }]);
-                } else if (cell === YELLOW) {
-                    fieldSJDON.push(["div", { className: "piece yellow" }]);
-                }
-
-                // Render this field into the existing board element
-                renderSJDON(fieldSJDON, this.boardEl);
-            });
-        });
+        const app = document.querySelector(".app");
+        render(parseSjdon([App], createElement), app);
+        return app;
     },
     handleFieldClick(row, col) {
         for (let i = ROWS - 1; i >= 0; i--) {
             if (model.state.board[i][col] === '') {
+                model.setState();
                 model.updateCell(i, col);
 
                 if (model.checkWinner(i, col)) {
@@ -187,29 +215,12 @@ const view = {
     },
 };
 
-function renderSJDON(sjdonelm, root) {
-    let element = document.createElement(sjdonelm[0]);
+function setInList(list, index, value) {
+    return list.map((el, i) => i === index ? value : el);
+}
 
-    for (let i = 1; i < sjdonelm.length; i++) {
-        if (Array.isArray(sjdonelm[i])) {
-            renderSJDON(sjdonelm[i], element);
-        } else if (typeof sjdonelm[i] === "object") {
-            for (const [key, value] of Object.entries(sjdonelm[i])) {
-                if (key === "dataset") {
-                    Object.entries(value).forEach(([dataKey, dataValue]) => {
-                        element.dataset[dataKey] = dataValue;
-                    });
-                } else if (key.startsWith("on")) {
-                    element.addEventListener(key.slice(2).toLowerCase(), value);
-                } else {
-                    element[key] = value;
-                }
-            }
-        } else if (typeof sjdonelm[i] === "string") {
-            element.textContent = sjdonelm[i];
-        }
-    }
-    root.append(element);
+function setInObject(obj, key, value) {
+    return { ...obj, [key]: value };
 }
 
 // Initialize App

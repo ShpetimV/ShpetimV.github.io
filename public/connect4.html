@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <title>Connect Four</title>
+    <link rel="icon" href="favicon.png">
 </head>
 <body>
 <div class="heading">
@@ -12,10 +13,11 @@
 </div>
 <div class="button-container">
     <button class="newGame">New Game!</button>
-    <button onclick="model.loadState()" class="uiButtons">Laden</button>
-    <button onclick="model.saveState()" class="uiButtons">Speichern</button>
-    <button onclick="model.loadStateLocal()" class="uiButtons">Laden Lokal</button>
-    <button onclick="model.saveStateLocal()" class="uiButtons">Speichern Lokal</button>
+    <button class="load uiButtons">Laden</button>
+    <button class="save uiButtons">Speichern</button>
+    <button class="loadLocal uiButtons">Laden Lokal</button>
+    <button class="saveLocal uiButtons">Speichern Lokal</button>
+    <button class="undo uiButtons">Undo</button>
 </div>
 <div class="gameContainer">
     <div class="playerTurnBox">
@@ -25,8 +27,8 @@
         </div>
         <div class="thinking">Thinking<span class="dot1">.</span><span class="dot2">.</span><span class="dot3">.</span></div>
     </div>
-    <div class="board"></div>
-    <script src="main.js"></script>
+    <div class="app"></div>
+    <script type="module" src="main.js"></script>
 </div>
 </body>
 </html>
