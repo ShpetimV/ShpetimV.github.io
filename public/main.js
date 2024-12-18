@@ -1,4 +1,3 @@
-
 import { render, parseSjdon, createElement } from "./lib/suiweb.min.js";
 
 // Constants
@@ -16,29 +15,62 @@ const model = {
         board: Array(ROWS).fill('').map(() => Array(COLS).fill('')),
         currentPlayer: RED,
     },
+
+    /**
+     * Initialize the model's state by clearing the board and setting the default current player.
+     */
     init() {
-        this.clearBoard(); // Initialize the board
+        this.clearBoard();
     },
+
+    /**
+     * Undo the last move by reverting the state to the previous one in the state sequence.
+     */
     undo() {
         if(this.stateSeq.length > 0) {
             this.state = this.stateSeq.pop();
         }
     },
+
+    /**
+     * Save the current state to the state sequence, allowing for undo operations.
+     */
     setState() {
         this.stateSeq.push(JSON.parse(JSON.stringify(this.state)));
     },
+
+    /**
+     * Clear the entire board and reset the current player to RED.
+     */
     clearBoard() {
         this.state.board = Array(ROWS).fill('').map(() => Array(COLS).fill(''));
         this.state.currentPlayer = RED;
+        this.stateSeq = [];
     },
+
+    /**
+     * Toggle the current player between RED and YELLOW.
+     * @returns {void}
+     */
     togglePlayer() {
         this.state = setInObject(this.state, 'currentPlayer', this.state.currentPlayer === RED ? YELLOW : RED);
     },
+
+    /**
+     * Update the board cell at the given row and column to the current player's piece.
+     * @param {number} row - The row index.
+     * @param {number} col - The column index.
+     */
     updateCell(row, col) {
         const newRow = setInList(this.state.board[row], col, this.state.currentPlayer);
         const newBoard = setInList(this.state.board, row, newRow);
         this.state = setInObject(this.state, 'board', newBoard);
     },
+
+    /**
+     * Load the current game state from the server via a fetch API call.
+     * If successful, updates the model and re-renders the board.
+     */
     loadState() {
         fetch(`/api/data/${DATA_KEY}?api-key=${API_KEY}`, { method: 'GET' })
             .then(response => response.json())
@@ -58,6 +90,10 @@ const model = {
                 alert("Failed to load game. Please try again.");
             });
     },
+
+    /**
+     * Save the current game state to the server.
+     */
     saveState() {
         fetch(`/api/data/${DATA_KEY}?api-key=${API_KEY}`, {
             method: 'PUT',
@@ -74,11 +110,19 @@ const model = {
                 alert("Failed to save game. Please try again.");
             });
     },
+
+    /**
+     * Save the current game state locally (in the browser's localStorage).
+     */
     saveStateLocal() {
         localStorage.setItem("currentPlayer", this.state.currentPlayer);
         localStorage.setItem("board", JSON.stringify(this.state.board));
         alert("Game saved locally!");
     },
+
+    /**
+     * Load the game state from localStorage.
+     */
     loadStateLocal() {
         const currentPlayer = localStorage.getItem("currentPlayer");
         const board = localStorage.getItem("board");
@@ -92,9 +136,22 @@ const model = {
         view.renderBoard();
         view.updateTurnMessage();
     },
+
+    /**
+     * Check if the current player's move at (row, col) resulted in a win.
+     * @param {number} row - The row index where the piece was placed.
+     * @param {number} col - The column index where the piece was placed.
+     * @returns {boolean} True if the current player has won, false otherwise.
+     */
     checkWinner(row, col) {
         return this.checkHorizontal(row) || this.checkVertical(col) || this.checkDiagonalRight(row, col) || this.checkDiagonalLeft(row, col);
     },
+
+    /**
+     * Check for a horizontal four-in-a-row at the given row.
+     * @param {number} row - The row index to check.
+     * @returns {boolean} True if there's a horizontal four-in-a-row, otherwise false.
+     */
     checkHorizontal(row) {
         let count = 0;
         for (let col = 0; col < COLS; col++) {
@@ -103,6 +160,12 @@ const model = {
         }
         return false;
     },
+
+    /**
+     * Check for a vertical four-in-a-row at the given column.
+     * @param {number} col - The column index to check.
+     * @returns {boolean} True if there's a vertical four-in-a-row, otherwise false.
+     */
     checkVertical(col) {
         let count = 0;
         for (let row = 0; row < ROWS; row++) {
@@ -111,6 +174,13 @@ const model = {
         }
         return false;
     },
+
+    /**
+     * Check for a diagonal (top-left to bottom-right) four-in-a-row that includes (row, col).
+     * @param {number} row - The row index of the last move.
+     * @param {number} col - The column index of the last move.
+     * @returns {boolean} True if there's such a diagonal four-in-a-row, otherwise false.
+     */
     checkDiagonalRight(row, col) {
         let count = 0;
         for (let i = -3; i <= 3; i++) {
@@ -123,6 +193,13 @@ const model = {
         }
         return false;
     },
+
+    /**
+     * Check for a diagonal (top-right to bottom-left) four-in-a-row that includes (row, col).
+     * @param {number} row - The row index of the last move.
+     * @param {number} col - The column index of the last move.
+     * @returns {boolean} True if there's such a diagonal four-in-a-row, otherwise false.
+     */
     checkDiagonalLeft(row, col) {
         let count = 0;
         for (let i = -3; i <= 3; i++) {
@@ -135,8 +212,6 @@ const model = {
         }
         return false;
     },
-
-
 };
 
 const App = () => [Board, { board: model.state.board }];
@@ -168,6 +243,9 @@ const view = {
     turnPieceEl: document.querySelector('.turnPiece .piece'),
     newGameBtn: document.querySelector('.newGame'),
 
+    /**
+     * Initialize the view: set up event listeners and render the initial board.
+     */
     init() {
         this.newGameBtn.addEventListener("click", () => {
             model.clearBoard();
@@ -185,11 +263,23 @@ const view = {
         });
         this.renderBoard();
     },
+
+    /**
+     * Re-render the board using the updated model state.
+     * @returns {HTMLElement} The container element after rendering.
+     */
     renderBoard() {
         const app = document.querySelector(".app");
         render(parseSjdon([App], createElement), app);
         return app;
     },
+
+    /**
+     * Handle a click on a board field. Finds the next available cell in the clicked column,
+     * updates the model state, checks for a win, toggles the player, and re-renders.
+     * @param {number} row - The row index of the clicked cell (not necessarily where the piece falls).
+     * @param {number} col - The column index of the clicked cell.
+     */
     handleFieldClick(row, col) {
         for (let i = ROWS - 1; i >= 0; i--) {
             if (model.state.board[i][col] === '') {
@@ -209,16 +299,34 @@ const view = {
             }
         }
     },
+
+    /**
+     * Update the message and piece indicator to show whose turn it is.
+     */
     updateTurnMessage() {
         this.turnMessageEl.textContent = `It's ${model.state.currentPlayer === RED ? 'Red' : 'Yellow'}'s turn!`;
         this.turnPieceEl.className = `piece ${model.state.currentPlayer === RED ? 'red' : 'yellow'}`;
     },
 };
 
+/**
+ * Set a value in a list at a given index, returning a new updated list without mutating the original.
+ * @param {Array} list - The original array.
+ * @param {number} index - The index at which to set the value.
+ * @param {*} value - The value to set.
+ * @returns {Array} A new array with the updated value.
+ */
 function setInList(list, index, value) {
     return list.map((el, i) => i === index ? value : el);
 }
 
+/**
+ * Set a key-value pair in an object, returning a new updated object without mutating the original.
+ * @param {Object} obj - The original object.
+ * @param {string} key - The property name to set.
+ * @param {*} value - The value to assign.
+ * @returns {Object} A new object with the updated key-value pair.
+ */
 function setInObject(obj, key, value) {
     return { ...obj, [key]: value };
 }
