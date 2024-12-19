@@ -266,6 +266,8 @@ const view = {
             this.renderBoard();
             this.updateTurnMessage();
         });
+        document.querySelector(".load").addEventListener("click", () => model.loadState());
+        document.querySelector(".save").addEventListener("click", () => model.saveState());
         document.querySelector(".loadLocal").addEventListener("click", () => model.loadStateLocal());
         document.querySelector(".saveLocal").addEventListener("click", () => model.saveStateLocal());
         document.querySelector(".undo").addEventListener("click", () => {
