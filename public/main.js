@@ -24,6 +24,21 @@ const model = {
     },
 
     /**
+     * Check if the game is a tie (i.e., the board is full and no winner).
+     * @returns {boolean} True if the game is a tie, otherwise false.
+     */
+    checkTie() {
+        for (let row = 0; row < ROWS; row++) {
+            for (let col = 0; col < COLS; col++) {
+                if (this.state.board[row][col] === '') {
+                    return false;
+                }
+            }
+        }
+        return true;
+    },
+
+    /**
      * Undo the last move by reverting the state to the previous one in the state sequence.
      */
     undo() {
@@ -242,7 +257,6 @@ const view = {
     turnMessageEl: document.querySelector('.turnMessage'),
     turnPieceEl: document.querySelector('.turnPiece .piece'),
     newGameBtn: document.querySelector('.newGame'),
-
     /**
      * Initialize the view: set up event listeners and render the initial board.
      */
@@ -252,8 +266,6 @@ const view = {
             this.renderBoard();
             this.updateTurnMessage();
         });
-        document.querySelector(".load").addEventListener("click", () => model.loadState());
-        document.querySelector(".save").addEventListener("click", () => model.saveState());
         document.querySelector(".loadLocal").addEventListener("click", () => model.loadStateLocal());
         document.querySelector(".saveLocal").addEventListener("click", () => model.saveStateLocal());
         document.querySelector(".undo").addEventListener("click", () => {
@@ -288,6 +300,9 @@ const view = {
 
                 if (model.checkWinner(i, col)) {
                     alert(`${model.state.currentPlayer === RED ? 'Red' : 'Yellow'} wins!`);
+                    model.clearBoard();
+                } else if(model.checkTie()) {
+                    alert("It's a tie!");
                     model.clearBoard();
                 } else {
                     model.togglePlayer();
